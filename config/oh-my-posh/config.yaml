@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+
+upgrade:
+  source: cdn
+  interval: 168h
+  auto: false
+  notice: false
+blocks:
+  - type: prompt
+    #newline: true
+    alignment: left
+    segments:
+      - template: <p:decoration>┏[</>{{ .UserName }}<p:decoration>]</>
+        foreground: 'p:info'
+        type: session
+        style: plain
+      - properties:
+          fetch_stash_count: true
+          fetch_status: true
+          fetch_upstream_icon: true
+        template: <p:decoration>-[</>{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }} {{ end }}{{ if .Working.Changed }}<#8fbcbb>{{ if gt .Working.Added 0 }}+{{ .Working.Added }} {{end}}{{ if gt .Working.Modified 0 }}~{{ .Working.Modified }} {{end}}</>{{ end }}{{ if .Staging.Changed }}<p:danger> ● </>{{ end }}<p:decoration>]</>
+        foreground: 'p:accent'
+        type: git
+        style: plain
+      - template: <p:decoration>-[</>{{.Profile}}{{if .Region}}@{{.Region}}{{end}}<p:decoration>]</>
+        foreground: 'p:accent'
+        type: aws
+        style: plain
+      - template: '<p:decoration>-[</>{{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}}<p:decoration>]</>'
+        foreground: 'p:accent'
+        type: kubectl
+        style: plain
+      - template: <p:decoration>[</><p:decoration>]</>
+        foreground: '#d8dee9'
+        type: root
+        style: plain
+      - template: <p:decoration>[x</>{{ reason .Code }}<p:decoration>]</>
+        foreground: '#d8dee9'
+        type: status
+        style: plain
+  - type: prompt
+    alignment: left
+    segments:
+      - properties:
+          style: full
+        template: <p:decoration>┖[</>{{ .Path }}<p:decoration>]</>
+        foreground: '#88c0d0'
+        type: path
+        style: plain
+    newline: true
+  - type: prompt
+    alignment: left
+    segments:
+      - template: '  '
+        foreground: '#5e81ac'
+        type: text
+        style: plain
+    newline: true
+#transient_prompt:
+#  foreground: 'p:decoration'
+#  background: 'transparent'
+#  template: '  '
+palette:
+  info: "#88c0d0"
+  accent: "#b48ead"
+  decoration: "#5e81ac"
+  danger: "#88c0d0" 
+version: 3
+final_space: true
