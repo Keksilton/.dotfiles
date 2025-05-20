@@ -18,7 +18,7 @@ blocks:
           fetch_stash_count: true
           fetch_status: true
           fetch_upstream_icon: true
-        template: <p:decoration>-[</>{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }} {{ end }}{{ if .Working.Changed }}<#8fbcbb>{{ if gt .Working.Added 0 }}+{{ .Working.Added }} {{end}}{{ if gt .Working.Modified 0 }}~{{ .Working.Modified }} {{end}}</>{{ end }}{{ if .Staging.Changed }}<p:danger> ● </>{{ end }}<p:decoration>]</>
+        template: <p:decoration>-[</>{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }} {{ end }}{{ if .Working.Changed }}<#8fbcbb>{{ if gt .Working.Added 0 }}+{{ .Working.Added }} {{end}}{{ if gt .Working.Modified 0 }}~{{ .Working.Modified }} {{end}}{{ if gt .Working.Deleted 0 }}-{{ .Working.Deleted }} {{end}}</>{{ end }}{{ if .Staging.Changed }}<p:danger> ● </>{{ end }}<p:decoration>]</>
         foreground: 'p:accent'
         type: git
         style: plain
