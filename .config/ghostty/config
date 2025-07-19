@@ -6,6 +6,8 @@ background-blur = true
 theme = ayu
 keybind = ctrl+v=paste_from_clipboard
 keybind = f11=toggle_fullscreen
+#keybind = ctrl+enter=esc:\x1b[13;5u
+keybind = shift+enter=csi:OM
 font-family = "Cascadia Mono NF"
 font-size = 11
 window-decoration = server

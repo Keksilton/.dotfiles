@@ -21,4 +21,6 @@ if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh --config '~/.config/oh-my-posh/config.yaml')"
 fi
 
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bold,underline"
+
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
