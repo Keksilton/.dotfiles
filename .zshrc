@@ -3,7 +3,15 @@
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
     PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 fi
+if ! [[ "$PATH" =~ "$HOME/.cargo/bin:" ]]; then
+    PATH="$HOME/.cargo/bin:$PATH"
+fi
 export PATH
+
+if [[ "$TERM_PROGRAM" == "ghostty" ]]; then
+    export TERM=xterm-256color
+fi
+
 
 # User specific aliases and functions
 if [ -d ~/.config/zshrc ]; then
