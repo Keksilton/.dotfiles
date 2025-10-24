@@ -8,7 +8,7 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # zsh parameter completion for the dotnet CLI
 
