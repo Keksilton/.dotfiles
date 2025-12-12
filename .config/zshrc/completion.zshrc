@@ -4,6 +4,7 @@ fpath=(~/.local/share/zinit/completions $fpath)
 zstyle ':completion:*' completer _expand _complete _ignored
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
 
+autoload bashcompinit && bashcompinit
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
@@ -28,3 +29,5 @@ _dotnet_zsh_complete()
 }
 
 compdef _dotnet_zsh_complete dotnet
+
+complete -C '/usr/bin/aws_completer' aws
