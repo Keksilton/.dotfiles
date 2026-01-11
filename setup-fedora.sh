@@ -22,7 +22,13 @@ sudo dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
 # Apps
 
-sudo dnf install -y discord zsh fzf stow zsh-syntax-highlighting zsh-autosuggestions btop lsd kvantum stow ghostty tailscale tldr delta dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl jq awscli2 python3.12 python3.9 python 3.13 podman
+sudo dnf install -y discord zsh fzf stow zsh-syntax-highlighting zsh-autosuggestions btop lsd kvantum ghostty tailscale tldr delta dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl jq awscli2 python3.12 python3.9 python 3.13 podman cargo
+
+## dotnet tools
+dotnet tool install -g csharprepl 
+
+## flatpaks
+flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian
 
 
 # Appearance
@@ -32,8 +38,13 @@ sudo dnf install -y discord zsh fzf stow zsh-syntax-highlighting zsh-autosuggest
 
 # WIP TPM Decryption setup (secure boot)
 # sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=1+4+5+7 /dev/nvme2n1p3
-# sudo grubby --args="rd.luks.options=tpm2-device=auto" --update-kernel=ALL
+sudo grubby --args="rd.luks.options=tpm2-device=auto" --update-kernel=ALL
 
+# Common fixes
+
+sudo bash -c "echo 'options hid_apple fnmode=2' > /etc/modprobe.d/hid_apple.conf"
+
+sudo dracut -fv
 
 stow .
 
