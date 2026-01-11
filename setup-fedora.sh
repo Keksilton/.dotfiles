@@ -37,8 +37,13 @@ flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop
 # SDDM: Andromeda palsma 6 https://store.kde.org/p/2144475
 
 # WIP TPM Decryption setup (secure boot)
+## Example /etc/crypttab
+## luks-<UUID> UUID=<UUID> none tpm2-device=auto,discard
+## luks-<UUID> UUID=<UUID> /path/to/keyfile luks
 # sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=1+4+5+7 /dev/nvme2n1p3
 sudo grubby --args="rd.luks.options=tpm2-device=auto" --update-kernel=ALL
+
+
 
 # Common fixes
 
