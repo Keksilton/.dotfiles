@@ -1,14 +1,18 @@
+cd ~/.dotfiles
+
+sudo dnf install stow
+
+stow .
+
 sudo dnf copr enable scottames/ghostty
 
+#sudo yum install -y yum-utils
+#sudo yum-config-manager --add-repo https://packages.clickhouse.com/rpm/clickhouse.repo
 
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://packages.clickhouse.com/rpm/clickhouse.repo
-
-sudo yum install -y clickhouse-server clickhouse-client
+#sudo yum install -y clickhouse-server clickhouse-client
 
 curl -fsSL https://neuralink.com/tsui/install.sh | bash
 curl -s https://ohmyposh.dev/install.sh | bash -s
-
 
 # Codecs
 sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
@@ -22,14 +26,25 @@ sudo dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
 # Apps
 
-sudo dnf install -y discord zsh fzf stow zsh-syntax-highlighting zsh-autosuggestions btop lsd kvantum ghostty tailscale tldr delta dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl jq awscli2 python3.12 python3.9 python 3.13 podman cargo
+sudo dnf install -y zsh fzf stow zsh-syntax-highlighting zsh-autosuggestions btop lsd kvantum ghostty tailscale tldr delta dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl jq awscli2 python3.12 python3.9 python 3.13 podman cargo neovim git gcc-c++ cmake extra-cmake-modules mokutil steam --skip-unavailable
 
 ## dotnet tools
 dotnet tool install -g csharprepl 
 
 ## flatpaks
-flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian
+flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian flathub org.telegram.desktop flathub tv.plex.PlexDesktop
 
+# Install Official Discord
+wget "https://discord.com/api/download?platform=linux&format=tar.gz" -O discord.tar.gz
+tar -xf discord.tar.gz
+rm discord.tar.gz
+sudo mv Discord /usr/share/discord
+sudo cp /usr/share/discord/discord.desktop /usr/share/applications/discord.desktop
+
+# GIT config
+git config --global core.pager delta
+git config --global interactive.diffFilter 'delta --color-only'
+git config --global delta.navigate true
 
 # Appearance
 # Kvantum theme: Andromeda https://store.kde.org/p/2036824
@@ -51,6 +66,6 @@ sudo bash -c "echo 'options hid_apple fnmode=2' > /etc/modprobe.d/hid_apple.conf
 
 sudo dracut -fv
 
-stow .
+cshh --shell /usr/bin/zsh
 
-source ~/.zshrc
+zsh
