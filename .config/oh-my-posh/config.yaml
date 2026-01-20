@@ -10,7 +10,7 @@ blocks:
     #newline: true
     alignment: left
     segments:
-      - template: <p:decoration>┏[</>{{ .UserName }}<p:decoration>]</>
+      - template: <p:decoration>┏[</>{{ if .SSHSession }} {{ end }}{{ .UserName }}@{{ .HostName }}<p:decoration>]</>
         foreground: 'p:info'
         type: session
         style: plain
@@ -25,6 +25,10 @@ blocks:
       - template: <p:decoration>-[</>{{.Profile}}{{if .Region}}@{{.Region}}{{end}}<p:decoration>]</>
         foreground: 'p:accent'
         type: aws
+        style: plain
+      - template: <p:decoration>-[</>{{.Icon}}<p:decoration>]</>
+        foreground: 'p:accent'
+        type: os
         style: plain
       - template: '<p:decoration>-[</>{{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}}<p:decoration>]</>'
         foreground: 'p:accent'
