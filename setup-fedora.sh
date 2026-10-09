@@ -28,9 +28,8 @@ write_file() {
   echo "$2" | sudo tee "$1" >/dev/null
 }
 
-sudo dnf install -y stow
-
-stow .
+# stow, git, zsh, oh-my-posh, tmux and the other CLI tools
+bash ./setup-cli-fedora.sh
 
 if [[ ! -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:scottames:ghostty.repo ]]; then
   sudo dnf copr enable -y scottames/ghostty
@@ -42,7 +41,6 @@ fi
 #sudo yum install -y clickhouse-server clickhouse-client
 
 has tsui || curl -fsSL https://neuralink.com/tsui/install.sh | bash
-has oh-my-posh || curl -fsSL https://ohmyposh.dev/install.sh | bash -s
 
 # Codecs
 if ! installed rpmfusion-free-release rpmfusion-nonfree-release; then
@@ -58,7 +56,7 @@ swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
 # Apps
 
-sudo dnf install -y zsh fzf stow zsh-syntax-highlighting zsh-autosuggestions btop lsd kvantum ghostty tailscale tldr delta dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl jq awscli2 python3.12 python3.9 python3.13 podman cargo neovim git gcc-c++ cmake extra-cmake-modules steam --skip-unavailable
+sudo dnf install -y kvantum ghostty dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl awscli2 python3.12 python3.9 python3.13 podman cargo neovim gcc-c++ cmake extra-cmake-modules steam --skip-unavailable
 
 ## dotnet tools
 if ! grep -qw csharprepl <<<"$(dotnet tool list -g)"; then
@@ -68,11 +66,6 @@ fi
 ## flatpaks
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian org.telegram.desktop tv.plex.PlexDesktop
-
-# GIT config
-git config --global core.pager delta
-git config --global interactive.diffFilter 'delta --color-only'
-git config --global delta.navigate true
 
 # Appearance
 # Kvantum theme: Andromeda https://store.kde.org/p/2036824
@@ -96,8 +89,4 @@ fi
 # Only rebuild the initramfs when the modprobe config actually changed
 if write_file /etc/modprobe.d/hid_apple.conf 'options hid_apple fnmode=2'; then
   sudo dracut -fv
-fi
-
-if [[ "$(getent passwd "$USER" | cut -d: -f7)" != /usr/bin/zsh ]]; then
-  chsh -s /usr/bin/zsh
 fi

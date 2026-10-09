@@ -35,4 +35,6 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bold,underline"
 
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
+fi
