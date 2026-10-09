@@ -26,20 +26,13 @@ sudo dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
 # Apps
 
-sudo dnf install -y zsh fzf stow zsh-syntax-highlighting zsh-autosuggestions btop lsd kvantum ghostty tailscale tldr delta dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl jq awscli2 python3.12 python3.9 python 3.13 podman cargo neovim git gcc-c++ cmake extra-cmake-modules mokutil steam --skip-unavailable
+sudo dnf install -y zsh fzf stow zsh-syntax-highlighting zsh-autosuggestions btop lsd kvantum ghostty tailscale tldr delta dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl jq awscli2 python3.12 python3.9 python3.13 podman cargo neovim git gcc-c++ cmake extra-cmake-modules mokutil steam --skip-unavailable
 
 ## dotnet tools
 dotnet tool install -g csharprepl 
 
 ## flatpaks
-flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian flathub org.telegram.desktop flathub tv.plex.PlexDesktop
-
-# Install Official Discord
-wget "https://discord.com/api/download?platform=linux&format=tar.gz" -O discord.tar.gz
-tar -xf discord.tar.gz
-rm discord.tar.gz
-sudo mv Discord /usr/share/discord
-sudo cp /usr/share/discord/discord.desktop /usr/share/applications/discord.desktop
+flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian org.telegram.desktop tv.plex.PlexDesktop 
 
 # GIT config
 git config --global core.pager delta
@@ -66,6 +59,4 @@ sudo bash -c "echo 'options hid_apple fnmode=2' > /etc/modprobe.d/hid_apple.conf
 
 sudo dracut -fv
 
-cshh --shell /usr/bin/zsh
-
-zsh
+cssh --shell /usr/bin/zsh
