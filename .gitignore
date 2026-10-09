@@ -1,0 +1,6 @@
+# Runtime output written by apps into the symlinked config dirs
+.config/btop/btop.log
+.config/nvim/doc/tags
+
+# TPM and the plugins it installs (bootstrapped from .tmux.conf instead)
+.config/tmux/plugins/

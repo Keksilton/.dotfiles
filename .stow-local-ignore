@@ -1,3 +1,5 @@
-.git
-setup-fedora.sh
-README.md
+\.git
+\.gitignore
+setup-fedora\.sh
+README\.md
+LICENSE.*
