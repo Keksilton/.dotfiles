@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+
+# Claude Code status line, rendered by `oh-my-posh claude` (see ~/.claude/settings.json)
+blocks:
+  - type: prompt
+    alignment: left
+    segments:
+      - template: <p:decoration>[</>{{ .Model.DisplayName }}{{ if and .Effort .Effort.Level }} <p:decoration>·</> {{ .Effort.Level }}{{ end }}{{ if .FastMode }} <p:accent>fast</>{{ end }}<p:decoration>]-[</><p:accent>{{ .TokenGaugeUsed }}</> {{ .TokenUsagePercent }}%<p:decoration>]</>{{ if .FiveHourUsage }}<p:decoration>-[</>5h {{ .FiveHourUsage }}%<p:decoration>]</>{{ end }}
+        foreground: 'p:info'
+        type: claude
+        style: plain
+      - properties:
+          fetch_status: true
+        template: <p:decoration>-[</>{{ .HEAD }}{{ if .Working.Changed }} <#8fbcbb>{{ .Working.String }}</>{{ end }}{{ if .Staging.Changed }}<p:danger> ●</>{{ end }}<p:decoration>]</>
+        foreground: 'p:accent'
+        type: git
+        style: plain
+      - properties:
+          style: full
+        template: <p:decoration>-[</>{{ .Path }}<p:decoration>]</>
+        foreground: '#88c0d0'
+        type: path
+        style: plain
+palette:
+  info: "#88c0d0"
+  accent: "#b48ead"
+  decoration: "#5e81ac"
+  danger: "#88c0d0"
+version: 3
