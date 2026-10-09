@@ -6,12 +6,14 @@ fi
 if ! [[ "$PATH" =~ "$HOME/.cargo/bin:" ]]; then
     PATH="$HOME/.cargo/bin:$PATH"
 fi
+if ! [[ "$PATH" =~ "$HOME/.dotnet/tools:" ]]; then
+    PATH="$HOME/.dotnet/tools:$PATH"
+fi
 export PATH
 
-if [[ "$TERM_PROGRAM" == "ghostty" ]]; then
-    export TERM=xterm-256color
-fi
-
+#if [[ "$TERM_PROGRAM" == "ghostty" ]]; then
+#    export TERM=xterm-256color
+#fi
 
 # User specific aliases and functions
 if [ -d ~/.config/zshrc ]; then
@@ -32,3 +34,5 @@ fi
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bold,underline"
 
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"
