@@ -166,6 +166,10 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Treat split zsh config files (e.g. ~/.config/zshrc/aliases.zshrc) as zsh
+--  See `:help vim.filetype.add()`
+vim.filetype.add { pattern = { ['.*%.zshrc'] = 'zsh' } }
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
