@@ -10,8 +10,12 @@ blocks:
         type: claude
         style: plain
       - properties:
+          fetch_stash_count: true
           fetch_status: true
-        template: <p:decoration>-[</>{{ .HEAD }}{{ if .Working.Changed }} <#8fbcbb>{{ .Working.String }}</>{{ end }}{{ if .Staging.Changed }}<p:danger> ●</>{{ end }}<p:decoration>]</>
+          fetch_upstream_icon: true
+          branch_icon: " "
+        # Same git format as the shell prompt in config.yaml
+        template: "<p:decoration>-[</>{{ .UpstreamIcon }}{{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}<#8fbcbb>  {{ .Working.String }}</>{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}<p:danger>  {{ .Staging.String }}</>{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }}<p:decoration>]</>"
         foreground: 'p:accent'
         type: git
         style: plain
