@@ -30,7 +30,9 @@ blocks:
           fetch_stash_count: true
           fetch_status: true
           fetch_upstream_icon: true
-        template: <p:decoration>-[</>{{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }} {{ end }}{{ if .Working.Changed }}<#8fbcbb>{{ if gt .Working.Untracked 0 }}?{{ .Working.Untracked }} {{end}}{{ if gt .Working.Added 0 }}+{{ .Working.Added }} {{end}}{{ if gt .Working.Modified 0 }}~{{ .Working.Modified }} {{end}}{{ if gt .Working.Deleted 0 }}-{{ .Working.Deleted }} {{end}}</>{{ end }}{{ if .Staging.Changed }}<p:danger> ● </>{{ end }}<p:decoration>]</>
+          branch_icon: " "
+        # Icons and layout follow the 1_shell theme: working | staging, then stash count
+        template: "<p:decoration>-[</>{{ .UpstreamIcon }}{{ .HEAD }}{{ if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }}<#8fbcbb>  {{ .Working.String }}</>{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Staging.Changed }}<p:danger>  {{ .Staging.String }}</>{{ end }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{ end }}<p:decoration>]</>"
         foreground: 'p:accent'
         type: git
         style: plain
