@@ -33,7 +33,11 @@ fi
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bold,underline"
 
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Fedora/Debian and Alpine install the plugin in different places
+for plugin in /usr/share/{,zsh/plugins/}zsh-syntax-highlighting/zsh-syntax-highlighting.zsh; do
+  [[ -f $plugin ]] && source $plugin && break
+done
+unset plugin
 
 if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv zsh)"

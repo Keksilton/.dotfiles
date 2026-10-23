@@ -9,7 +9,11 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
-source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# Fedora/Debian and Alpine install the plugin in different places
+for plugin in /usr/share/{,zsh/plugins/}zsh-autosuggestions/zsh-autosuggestions.zsh; do
+  [[ -f $plugin ]] && source $plugin && break
+done
+unset plugin
 
 # zsh parameter completion for the dotnet CLI
 
