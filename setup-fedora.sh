@@ -28,6 +28,16 @@ write_file() {
   echo "$2" | sudo tee "$1" >/dev/null
 }
 
+# Set a KDE config key only when it differs; --notify tells running apps about the change
+kde_set() {
+  if [[ "$(kreadconfig6 --file "$1" --group "$2" --key "$3")" != "$4" ]]; then
+    kwriteconfig6 --notify --file "$1" --group "$2" --key "$3" "$4"
+  fi
+}
+
+# Create the KDE folders first so stow links only our files instead of folding whole folders into the repo
+mkdir -p "$HOME/.config/Kvantum" "$HOME/.local/share/color-schemes"
+
 # stow, git, zsh, oh-my-posh, tmux and the other CLI tools
 bash ./setup-cli-fedora.sh
 
@@ -67,10 +77,30 @@ fi
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian org.telegram.desktop tv.plex.PlexDesktop
 
-# Appearance
-# Kvantum theme: Andromeda https://store.kde.org/p/2036824
-# Color scheme: Ayu
-# SDDM: Andromeda palsma 6 https://store.kde.org/p/2144475
+# Appearance (KDE Plasma)
+# Stowed with the dotfiles: Ayu Dark color scheme (.local/share/color-schemes) and the Kvantum
+# theme selection (.config/Kvantum/kvantum.kvconfig). The Andromeda themes come from a fork of
+# https://github.com/EliverLara/Andromeda-kde (GPL-3.0)
+if has plasma-apply-colorscheme; then
+  kvantum_theme="$HOME/.config/Kvantum/Andromeda"
+  plasma_style="$HOME/.local/share/plasma/desktoptheme/Andromeda"
+  if [[ ! -d "$kvantum_theme" || ! -d "$plasma_style" ]]; then
+    tmp="$(mktemp -d)"
+    git clone --depth 1 https://github.com/Keksilton/Andromeda-KDE "$tmp"
+    mkdir -p "$(dirname "$kvantum_theme")" "$(dirname "$plasma_style")"
+    [[ -d "$kvantum_theme" ]] || cp -r "$tmp/kvantum/Andromeda" "$kvantum_theme"
+    [[ -d "$plasma_style" ]] || cp -r "$tmp/plasma/desktoptheme/Andromeda" "$plasma_style"
+    rm -rf "$tmp"
+  fi
+
+  ## Both tools do nothing when the theme is already set
+  plasma-apply-colorscheme AyuDark
+  plasma-apply-desktoptheme Andromeda
+
+  ## Application style Kvantum (the Kvantum theme itself is set in .config/Kvantum/kvantum.kvconfig)
+  kde_set kdeglobals KDE widgetStyle kvantum
+  kde_set kdeglobals Icons Theme breeze-dark
+fi
 
 # WIP TPM Decryption setup (secure boot)
 ## Example /etc/crypttab
