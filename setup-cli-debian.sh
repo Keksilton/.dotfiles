@@ -14,8 +14,10 @@ export PATH="$HOME/.local/bin:$PATH"
 has() { command -v "$1" &>/dev/null; }
 
 sudo apt-get update
-sudo apt-get install -y stow curl ca-certificates unzip
+sudo apt-get install -y stow curl ca-certificates
 
+# Without an existing ~/.config, stow links the whole folder into the repo
+mkdir -p "$HOME/.config"
 stow .
 
 # Tailscale isn't in the Debian repos, so add its apt repo
@@ -28,7 +30,14 @@ fi
 
 sudo apt-get install -y git zsh zsh-syntax-highlighting zsh-autosuggestions tmux fzf btop tailscale lsd jq git-delta tldr
 
-has oh-my-posh || curl -fsSL https://ohmyposh.dev/install.sh | bash -s
+# Pinned oh-my-posh release, downloaded directly instead of running https://ohmyposh.dev/install.sh
+if ! has oh-my-posh; then
+  arch="$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL -o "$HOME/.local/bin/oh-my-posh.tmp" "https://cdn.ohmyposh.dev/releases/v31.9.1/posh-linux-$arch"
+  chmod +x "$HOME/.local/bin/oh-my-posh.tmp"
+  mv "$HOME/.local/bin/oh-my-posh.tmp" "$HOME/.local/bin/oh-my-posh"
+fi
 
 # GIT config
 git config --global core.pager delta

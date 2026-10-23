@@ -25,9 +25,11 @@ if [ -d ~/.config/zshrc ]; then
 fi
 unset rc
 
-source <(fzf --zsh)
+if command -v fzf &>/dev/null; then
+  source <(fzf --zsh)
+fi
 
-if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+if command -v oh-my-posh &>/dev/null && [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh --config '~/.config/oh-my-posh/config.yaml')"
 fi
 

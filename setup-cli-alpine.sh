@@ -30,8 +30,8 @@ if [ -n "$community" ] && ! grep -qxF "$community" /etc/apk/repositories; then
 fi
 
 $SUDO apk update
-# bash: needed by the oh-my-posh installer and TPM (tmux plugins); shadow: provides chsh
-$SUDO apk add stow curl ca-certificates unzip bash shadow git zsh zsh-syntax-highlighting zsh-autosuggestions tmux fzf btop tailscale lsd jq delta
+# bash: needed by TPM (tmux plugins); shadow: provides chsh
+$SUDO apk add stow curl ca-certificates bash shadow git zsh zsh-syntax-highlighting zsh-autosuggestions tmux fzf btop tailscale lsd jq delta
 
 # Without an existing ~/.config, stow links the whole folder into the repo
 mkdir -p "$HOME/.config"
@@ -46,7 +46,14 @@ if ! has tldr; then
   tldr --update
 fi
 
-has oh-my-posh || curl -fsSL https://ohmyposh.dev/install.sh | bash -s
+# Pinned oh-my-posh release, downloaded directly instead of running https://ohmyposh.dev/install.sh
+if ! has oh-my-posh; then
+  arch="$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')"
+  mkdir -p "$HOME/.local/bin"
+  curl -fsSL -o "$HOME/.local/bin/oh-my-posh.tmp" "https://cdn.ohmyposh.dev/releases/v31.9.1/posh-linux-$arch"
+  chmod +x "$HOME/.local/bin/oh-my-posh.tmp"
+  mv "$HOME/.local/bin/oh-my-posh.tmp" "$HOME/.local/bin/oh-my-posh"
+fi
 
 # GIT config
 git config --global core.pager delta

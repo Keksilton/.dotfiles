@@ -50,7 +50,12 @@ fi
 
 #sudo yum install -y clickhouse-server clickhouse-client
 
-has tsui || curl -fsSL https://neuralink.com/tsui/install.sh | bash
+# Pinned tsui release, downloaded directly instead of running https://neuralink.com/tsui/install.sh
+if ! has tsui; then
+  sudo curl -fsSL -o /usr/local/bin/tsui.tmp "https://github.com/neuralinkcorp/tsui/releases/download/v0.2.0/tsui-linux-$(uname -m)"
+  sudo chmod +x /usr/local/bin/tsui.tmp
+  sudo mv /usr/local/bin/tsui.tmp /usr/local/bin/tsui
+fi
 
 # Codecs
 if ! installed rpmfusion-free-release rpmfusion-nonfree-release; then
