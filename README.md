@@ -1,1 +1,1 @@
-git clone https://github.com/Keksilton/environment-setup.git ~/.dotfiles
+git clone https://github.com/Keksilton/.dotfiles.git
