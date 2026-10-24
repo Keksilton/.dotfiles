@@ -8,9 +8,13 @@ if [[ $EUID -eq 0 ]]; then
 fi
 
 cd "$(dirname "$(realpath "$0")")"
-export PATH="$HOME/.local/bin:$HOME/.dotnet/tools:$PATH"
+. ./setup-common.sh
+export PATH="$HOME/.dotnet/tools:$PATH"
 
-has() { command -v "$1" &>/dev/null; }
+TSUI_VERSION=v0.2.0
+TSUI_SHA256_X86_64=ccfcc1408ad695e671cc1272ae9969d9960a48890faf12015c1134cc641fd667
+TSUI_SHA256_AARCH64=218a477c5afcf4d63b0670de27a394bf4c78a16ca838289a1bdcdfc9b506a982
+
 installed() { rpm -q "$@" &>/dev/null; }
 
 # Swap package $1 for $2 only while $1 is still installed
@@ -45,21 +49,22 @@ if [[ ! -f /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:scottames:ghostty.re
   sudo dnf copr enable -y scottames/ghostty
 fi
 
-#sudo yum install -y yum-utils
-#sudo yum-config-manager --add-repo https://packages.clickhouse.com/rpm/clickhouse.repo
-
-#sudo yum install -y clickhouse-server clickhouse-client
-
 # Pinned tsui release, downloaded directly instead of running https://neuralink.com/tsui/install.sh
 if ! has tsui; then
-  sudo curl -fsSL -o /usr/local/bin/tsui.tmp "https://github.com/neuralinkcorp/tsui/releases/download/v0.2.0/tsui-linux-$(uname -m)"
-  sudo chmod +x /usr/local/bin/tsui.tmp
-  sudo mv /usr/local/bin/tsui.tmp /usr/local/bin/tsui
+  case "$(uname -m)" in
+    x86_64)  sha=$TSUI_SHA256_X86_64 ;;
+    aarch64) sha=$TSUI_SHA256_AARCH64 ;;
+    *) echo "No tsui build for $(uname -m)" >&2; exit 1 ;;
+  esac
+  tmp="$(mktemp)"
+  fetch "https://github.com/neuralinkcorp/tsui/releases/download/$TSUI_VERSION/tsui-linux-$(uname -m)" "$tmp" "$sha"
+  sudo install -m 755 "$tmp" /usr/local/bin/tsui
+  rm -f "$tmp"
 fi
 
 # Codecs
 if ! installed rpmfusion-free-release rpmfusion-nonfree-release; then
-  sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+  sudo dnf install -y "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
 fi
 sudo dnf config-manager setopt fedora-cisco-openh264.enabled=1
 sudo dnf update -y @core
