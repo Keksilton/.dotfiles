@@ -36,7 +36,7 @@ kde_set() {
 }
 
 # Create the KDE folders first so stow links only our files instead of folding whole folders into the repo
-mkdir -p "$HOME/.config/Kvantum" "$HOME/.local/share/color-schemes"
+mkdir -p "$HOME/.config/Kvantum" "$HOME/.local/share/color-schemes" "$HOME/.local/share/plasma/look-and-feel"
 
 # stow, git, zsh, oh-my-posh, tmux and the other CLI tools
 bash ./setup-cli-fedora.sh
@@ -83,9 +83,10 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian org.telegram.desktop tv.plex.PlexDesktop
 
 # Appearance (KDE Plasma)
-# Stowed with the dotfiles: Ayu Dark color scheme (.local/share/color-schemes) and the Kvantum
-# theme selection (.config/Kvantum/kvantum.kvconfig). The Andromeda themes come from a fork of
-# https://github.com/EliverLara/Andromeda-kde (GPL-3.0)
+# Stowed with the dotfiles: Ayu Dark color scheme (.local/share/color-schemes), the Kvantum
+# theme selection (.config/Kvantum/kvantum.kvconfig) and the KekDark global theme
+# (.local/share/plasma/look-and-feel) holding the panel layout. The Andromeda themes come from
+# a fork of https://github.com/EliverLara/Andromeda-kde (GPL-3.0)
 if has plasma-apply-colorscheme; then
   kvantum_theme="$HOME/.config/Kvantum/Andromeda"
   plasma_style="$HOME/.local/share/plasma/desktoptheme/Andromeda"
@@ -96,6 +97,12 @@ if has plasma-apply-colorscheme; then
     [[ -d "$kvantum_theme" ]] || cp -r "$tmp/kvantum/Andromeda" "$kvantum_theme"
     [[ -d "$plasma_style" ]] || cp -r "$tmp/plasma/desktoptheme/Andromeda" "$plasma_style"
     rm -rf "$tmp"
+  fi
+
+  ## Global theme KekDark: auto-hiding bottom panel layout plus the defaults set below.
+  ## --resetLayout replaces the current panels and desktops, so apply it only once
+  if [[ "$(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage)" != KekDark ]]; then
+    plasma-apply-lookandfeel -a KekDark --resetLayout
   fi
 
   ## Both tools do nothing when the theme is already set
