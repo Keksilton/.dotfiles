@@ -80,6 +80,13 @@ flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop
 # KDE Plasma appearance (themes, colors, panel layout)
 bash ./setup-kde.sh
 
+# Firewall: Fedora's default FedoraWorkstation zone opens every port above 1024.
+# public only allows ssh, mdns and dhcpv6-client, and nothing listens on those unless enabled
+sudo systemctl enable --now firewalld
+if [[ "$(sudo firewall-cmd --get-default-zone)" != public ]]; then
+  sudo firewall-cmd --set-default-zone=public
+fi
+
 # WIP TPM Decryption setup (secure boot)
 ## Example /etc/crypttab
 ## luks-<UUID> UUID=<UUID> none tpm2-device=auto,discard
