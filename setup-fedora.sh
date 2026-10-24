@@ -95,6 +95,16 @@ if write_file /etc/systemd/resolved.conf.d/llmnr.conf $'[Resolve]\nLLMNR=no'; th
   sudo systemctl restart systemd-resolved
 fi
 
+# Kernel hardening: hide kernel addresses from unprivileged users and only let a process ptrace
+# its own children. The latter blocks "attach to running process" in gdb/strace/Rider; use the
+# ptrace-allow / ptrace-restrict aliases from aliases.zshrc when you need that
+sysctl_conf='# Managed by setup-fedora.sh
+kernel.kptr_restrict = 1
+kernel.yama.ptrace_scope = 1'
+if write_file /etc/sysctl.d/90-hardening.conf "$sysctl_conf"; then
+  sudo sysctl -q -p /etc/sysctl.d/90-hardening.conf
+fi
+
 # WIP TPM Decryption setup (secure boot)
 ## Example /etc/crypttab
 ## luks-<UUID> UUID=<UUID> none tpm2-device=auto,discard

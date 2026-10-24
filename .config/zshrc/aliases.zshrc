@@ -18,3 +18,8 @@ alias find-package="pkgs=\$(dnf list --available | fzf --multi --preview 'dnf in
 alias update-clickhouse="curl https://clickhouse.com/ | sh ; sudo ./clickhouse install ; rm clickhouse"
 
 alias cobalt="yt-dlp --recode-video mp4 --force-write-archive"
+
+# setup-fedora.sh sets kernel.yama.ptrace_scope=1, which blocks attaching a debugger (gdb -p, Rider
+# "Attach to Process") to an already running process; allow it temporarily, then restrict again
+alias ptrace-allow="sudo sysctl kernel.yama.ptrace_scope=0"
+alias ptrace-restrict="sudo sysctl kernel.yama.ptrace_scope=1"
