@@ -87,6 +87,14 @@ if [[ "$(sudo firewall-cmd --get-default-zone)" != public ]]; then
   sudo firewall-cmd --set-default-zone=public
 fi
 
+# LLMNR (Link-Local Multicast Name Resolution) is unauthenticated, deprecated even by Windows 11,
+# and nothing on Linux needs it (mDNS via Avahi handles .local names). Drop-in instead of editing
+# /usr/lib/systemd/resolved.conf, which package updates overwrite
+sudo mkdir -p /etc/systemd/resolved.conf.d
+if write_file /etc/systemd/resolved.conf.d/llmnr.conf $'[Resolve]\nLLMNR=no'; then
+  sudo systemctl restart systemd-resolved
+fi
+
 # WIP TPM Decryption setup (secure boot)
 ## Example /etc/crypttab
 ## luks-<UUID> UUID=<UUID> none tpm2-device=auto,discard
