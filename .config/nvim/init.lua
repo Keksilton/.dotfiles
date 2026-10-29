@@ -944,28 +944,63 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    -- The rewritten `main` branch only manages parsers and queries; highlighting, folding and
+    -- indentation come from Neovim itself. Needs Neovim 0.12+, a C compiler and tree-sitter-cli 0.26+
+    -- (the CLI is only used for the few grammars that ship without a generated parser).
+    branch = 'main',
+    lazy = false,
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
+    config = function()
+      local ts = require 'nvim-treesitter'
+
+      -- Parsers installed up front; any other language is installed on first use (see the autocmd below)
+      ts.install { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+
+      ---@param buf integer
+      ---@param language string
+      local function attach(buf, language)
+        -- The buffer may be gone by the time an async install finishes
+        if not vim.api.nvim_buf_is_valid(buf) then
+          return
+        end
+        if not vim.treesitter.language.add(language) then
+          return
+        end
+        vim.treesitter.start(buf, language)
+        -- Treesitter indentation is still experimental, so only use it where an indent query exists;
+        -- otherwise Neovim falls back to its built-in indentexpr for the filetype
+        if vim.treesitter.query.get(language, 'indents') then
+          vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end
+        -- Treesitter folds, see `:help folds`
+        -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+        -- vim.wo.foldmethod = 'expr'
+      end
+
+      vim.api.nvim_create_autocmd('FileType', {
+        group = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true }),
+        callback = function(args)
+          local language = vim.treesitter.language.get_lang(args.match)
+          if not language then
+            return
+          end
+          if vim.tbl_contains(ts.get_installed 'parsers', language) then
+            attach(args.buf, language)
+          elseif vim.tbl_contains(ts.get_available(), language) then
+            -- Autoinstall languages that are not installed, then attach once the install finishes
+            ts.install(language):await(function()
+              attach(args.buf, language)
+            end)
+          else
+            -- The parser may exist outside nvim-treesitter (e.g. bundled with Neovim)
+            attach(args.buf, language)
+          end
+        end,
+      })
+    end,
+    -- Other treesitter-based plugins worth a look:
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects (main branch)
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the

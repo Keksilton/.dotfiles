@@ -66,7 +66,7 @@ swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
 # Apps
 
-sudo dnf install -y kvantum ghostty dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl awscli2 python3.12 python3.9 python3.13 podman cargo neovim gcc-c++ cmake extra-cmake-modules steam --skip-unavailable
+sudo dnf install -y kvantum ghostty dotnet-sdk-9.0 dotnet-sdk-8.0 dotnet-sdk-10.0 kmodtool akmods mokutil openssl awscli2 python3.12 python3.9 python3.13 podman cargo neovim tree-sitter-cli gcc-c++ cmake extra-cmake-modules steam --skip-unavailable
 
 ## dotnet tools
 if ! grep -qw csharprepl <<<"$(dotnet tool list -g)"; then
