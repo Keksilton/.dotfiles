@@ -12,6 +12,18 @@ RUN apt-get update \
 RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
  && npm cache clean --force
 
+# oh-my-posh for the Claude Code status line (same pinned release and hashes as setup-common.sh)
+ARG TARGETARCH
+ARG OMP_VERSION=v31.9.1
+RUN case "$TARGETARCH" in \
+      amd64) sha=574074a4e84797180e0bda0d133da5f01fbda89ecdb450134c7e566b9a389212 ;; \
+      arm64) sha=a04e7aed0d233ac861161c0f3d4d70912b0747764fd5b10f6bd19c0b6510eb49 ;; \
+      *) echo "No oh-my-posh build for $TARGETARCH" >&2; exit 1 ;; \
+    esac \
+ && curl -fsSL -o /usr/local/bin/oh-my-posh "https://cdn.ohmyposh.dev/releases/${OMP_VERSION}/posh-linux-${TARGETARCH}" \
+ && echo "$sha  /usr/local/bin/oh-my-posh" | sha256sum -c - \
+ && chmod +x /usr/local/bin/oh-my-posh
+
 # uid 1000, which --userns=keep-id maps to the host user so files in the mounted project keep their owner
 USER node
 ENV CLAUDE_CONFIG_DIR=/home/node/.claude

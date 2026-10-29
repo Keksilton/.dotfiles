@@ -24,20 +24,25 @@ alias cobalt="yt-dlp --recode-video mp4 --force-write-archive"
 # (e.g. `claude-box --continue`, `claude-box --dangerously-skip-permissions`)
 if command -v podman &>/dev/null; then
   typeset -g CLAUDE_BOX_DIR="${${(%):-%x}:A:h}/../../containers/claude"
+  # Rebuild after changing the Containerfile (e.g. bumping the Claude Code or oh-my-posh version)
+  alias claude-box-rebuild='podman build --pull -t localhost/claude-box "$CLAUDE_BOX_DIR"'
   function claude-box {
     local image=localhost/claude-box state="$HOME/.local/share/claude-box"
     if ! podman image exists "$image"; then
       podman build -t "$image" "$CLAUDE_BOX_DIR" || return
     fi
     mkdir -p "$state"
-    local -a gitconfig
-    [[ -f "$HOME/.gitconfig" ]] && gitconfig=(-v "$HOME/.gitconfig:/home/node/.gitconfig:ro,Z")
+    # Seed the container's own Claude settings (status line) on first run; edit $state/settings.json afterwards
+    [[ -f "$state/settings.json" ]] || cp "$CLAUDE_BOX_DIR/settings.json" "$state/settings.json"
+    local -a extra
+    [[ -f "$HOME/.gitconfig" ]] && extra+=(-v "$HOME/.gitconfig:/home/node/.gitconfig:ro,Z")
+    [[ -d "$HOME/.config/oh-my-posh" ]] && extra+=(-v "$HOME/.config/oh-my-posh:/home/node/.config/oh-my-posh:ro,Z")
     podman run --rm -it \
       --userns=keep-id --cap-drop=ALL --security-opt=no-new-privileges \
       --hostname claude-box \
       -v "$state:/home/node/.claude:Z" \
       -v "$PWD:$PWD:Z" -w "$PWD" \
-      "${gitconfig[@]}" \
+      "${extra[@]}" \
       -e TERM -e COLORTERM \
       "$image" "$@"
   }
