@@ -19,6 +19,30 @@ alias update-clickhouse="curl https://clickhouse.com/ | sh ; sudo ./clickhouse i
 
 alias cobalt="yt-dlp --recode-video mp4 --force-write-archive"
 
+# Claude Code in a rootless podman container: it can only see and write the current directory.
+# Login, settings and memory persist in ~/.local/share/claude-box; arguments go to claude
+# (e.g. `claude-box --continue`, `claude-box --dangerously-skip-permissions`)
+if command -v podman &>/dev/null; then
+  typeset -g CLAUDE_BOX_DIR="${${(%):-%x}:A:h}/../../containers/claude"
+  function claude-box {
+    local image=localhost/claude-box state="$HOME/.local/share/claude-box"
+    if ! podman image exists "$image"; then
+      podman build -t "$image" "$CLAUDE_BOX_DIR" || return
+    fi
+    mkdir -p "$state"
+    local -a gitconfig
+    [[ -f "$HOME/.gitconfig" ]] && gitconfig=(-v "$HOME/.gitconfig:/home/node/.gitconfig:ro,Z")
+    podman run --rm -it \
+      --userns=keep-id --cap-drop=ALL --security-opt=no-new-privileges \
+      --hostname claude-box \
+      -v "$state:/home/node/.claude:Z" \
+      -v "$PWD:$PWD:Z" -w "$PWD" \
+      "${gitconfig[@]}" \
+      -e TERM -e COLORTERM \
+      "$image" "$@"
+  }
+fi
+
 # setup-fedora.sh sets kernel.yama.ptrace_scope=1, which blocks attaching a debugger (gdb -p, Rider
 # "Attach to Process") to an already running process; allow it temporarily, then restrict again
 alias ptrace-allow="sudo sysctl kernel.yama.ptrace_scope=0"

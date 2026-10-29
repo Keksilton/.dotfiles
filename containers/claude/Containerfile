@@ -1,0 +1,19 @@
+# Claude Code in a container: only the directory mounted at run time is visible to it.
+# Started by the claude-box function in .config/zshrc/aliases.zshrc
+FROM docker.io/library/node:22-trixie-slim
+
+ARG CLAUDE_CODE_VERSION=2.1.312
+
+# git-delta: keeps a host ~/.gitconfig with core.pager=delta working inside the container
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl git git-delta jq less procps ripgrep \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+ && npm cache clean --force
+
+# uid 1000, which --userns=keep-id maps to the host user so files in the mounted project keep their owner
+USER node
+ENV CLAUDE_CONFIG_DIR=/home/node/.claude
+
+ENTRYPOINT ["claude"]
