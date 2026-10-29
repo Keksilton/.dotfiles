@@ -34,14 +34,17 @@ if command -v podman &>/dev/null; then
     mkdir -p "$state"
     # Seed the container's own Claude settings (status line) on first run; edit $state/settings.json afterwards
     [[ -f "$state/settings.json" ]] || cp "$CLAUDE_BOX_DIR/settings.json" "$state/settings.json"
+    # Mount sources must be real paths: podman relabels (:Z) a symlink itself, not its target, and the
+    # stowed configs are symlinks into the dotfiles repo, so SELinux would deny access inside the container
+    local project="${PWD:A}" gitconfig="$HOME/.gitconfig" omp="$HOME/.config/oh-my-posh"
     local -a extra
-    [[ -f "$HOME/.gitconfig" ]] && extra+=(-v "$HOME/.gitconfig:/home/node/.gitconfig:ro,Z")
-    [[ -d "$HOME/.config/oh-my-posh" ]] && extra+=(-v "$HOME/.config/oh-my-posh:/home/node/.config/oh-my-posh:ro,Z")
+    [[ -f "$gitconfig" ]] && extra+=(-v "${gitconfig:A}:/home/node/.gitconfig:ro,Z")
+    [[ -d "$omp" ]] && extra+=(-v "${omp:A}:/home/node/.config/oh-my-posh:ro,Z")
     podman run --rm -it \
       --userns=keep-id --cap-drop=ALL --security-opt=no-new-privileges \
       --hostname claude-box \
       -v "$state:/home/node/.claude:Z" \
-      -v "$PWD:$PWD:Z" -w "$PWD" \
+      -v "$project:$project:Z" -w "$project" \
       "${extra[@]}" \
       -e TERM -e COLORTERM \
       "$image" "$@"
