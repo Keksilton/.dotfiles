@@ -32,8 +32,14 @@ if command -v podman &>/dev/null; then
       podman build -t "$image" "$CLAUDE_BOX_DIR" || return
     fi
     mkdir -p "$state"
-    # Seed the container's own Claude settings (status line) on first run; edit $state/settings.json afterwards
-    [[ -f "$state/settings.json" ]] || cp "$CLAUDE_BOX_DIR/settings.json" "$state/settings.json"
+    # Add the status line to the container's own Claude settings when missing. Claude Code creates and
+    # rewrites that file itself, so merge into it instead of only seeding a missing file
+    if [[ ! -f "$state/settings.json" ]]; then
+      cp "$CLAUDE_BOX_DIR/settings.json" "$state/settings.json"
+    elif ! jq -e '.statusLine' "$state/settings.json" >/dev/null 2>&1; then
+      jq -s '.[0] * .[1]' "$state/settings.json" "$CLAUDE_BOX_DIR/settings.json" > "$state/settings.json.tmp" \
+        && mv "$state/settings.json.tmp" "$state/settings.json"
+    fi
     # Mount sources must be real paths: podman relabels (:Z) a symlink itself, not its target, and the
     # stowed configs are symlinks into the dotfiles repo, so SELinux would deny access inside the container
     local project="${PWD:A}" gitconfig="$HOME/.gitconfig" omp="$HOME/.config/oh-my-posh"
