@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# KDE Plasma appearance: Andromeda Kvantum theme and Plasma style, Ayu Dark color scheme and the
+# KDE Plasma appearance: dark mode by default, Andromeda Kvantum theme and Plasma style, Ayu Dark color scheme and the
 # KekDark global theme holding the auto-hiding panel layout
 # Run it inside a Plasma session after the CLI setup (needs stow, git and the kvantum package)
 # Safe to re-run: each step checks the current state before changing anything
@@ -73,3 +73,10 @@ plasma-apply-desktoptheme Andromeda
 # Application style Kvantum (the Kvantum theme itself is set in .config/Kvantum/kvantum.kvconfig)
 kde_set kdeglobals KDE widgetStyle kvantum
 kde_set kdeglobals Icons Theme breeze-dark
+
+# Dark mode: Plasma 6.5+ keeps a light and a dark global theme for the Light/Dark toggle on the
+# Quick Settings page and for the day/night auto switcher (both default to Breeze). Make KekDark the
+# dark one so the toggle and the switcher never fall back to Breeze Dark, and keep the switcher off
+# so the session doesn't flip to the light theme during the day
+kde_set kdeglobals KDE DefaultDarkLookAndFeel KekDark
+kde_set kdeglobals KDE AutomaticLookAndFeel false
