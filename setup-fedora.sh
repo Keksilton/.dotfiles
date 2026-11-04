@@ -14,6 +14,8 @@ export PATH="$HOME/.dotnet/tools:$PATH"
 TSUI_VERSION=v0.2.0
 TSUI_SHA256_X86_64=ccfcc1408ad695e671cc1272ae9969d9960a48890faf12015c1134cc641fd667
 TSUI_SHA256_AARCH64=218a477c5afcf4d63b0670de27a394bf4c78a16ca838289a1bdcdfc9b506a982
+# Folder Rider projects live under; claude-box-acp exposes only this tree to the ACP agent (disabled below)
+#ACP_PROJECTS_DIR="$HOME/RiderProjects"
 
 installed() { rpm -q "$@" &>/dev/null; }
 
@@ -76,6 +78,20 @@ fi
 ## flatpaks
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install -y flathub com.brave.Browser org.gimp.GIMP com.bitwarden.desktop md.obsidian.Obsidian org.telegram.desktop tv.plex.PlexDesktop
+
+## Rider / JetBrains AI Chat: claude-box as a custom ACP agent (what "Add Custom Agent" writes to
+## ~/.jetbrains/acp.json). The IDE starts ACP agents in a scratch folder and only names the project in
+## the session/new request, so the folder the projects live under is passed up front; see
+## .local/bin/claude-box-acp. Added only when missing, so edits such as other --root folders survive re-runs
+## TODO: disabled for now, re-enable together with ACP_PROJECTS_DIR at the top of the script
+#acp_json="$HOME/.jetbrains/acp.json"
+#if ! jq -e '.agent_servers["claude-box"]' "$acp_json" &>/dev/null; then
+#  mkdir -p "$HOME/.jetbrains"
+#  [[ -f "$acp_json" ]] || echo '{}' > "$acp_json"
+#  jq --arg cmd "$HOME/.local/bin/claude-box-acp" --arg root "$ACP_PROJECTS_DIR" \
+#    '.agent_servers["claude-box"] = {command: $cmd, args: ["--root", $root]}' "$acp_json" > "$acp_json.tmp" \
+#    && mv "$acp_json.tmp" "$acp_json"
+#fi
 
 # KDE Plasma appearance (themes, colors, panel layout)
 bash ./setup-kde.sh

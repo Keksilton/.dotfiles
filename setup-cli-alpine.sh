@@ -35,8 +35,8 @@ $SUDO apk update
 # bash: needed by TPM (tmux plugins); shadow: provides chsh
 $SUDO apk add stow curl ca-certificates bash shadow git zsh zsh-syntax-highlighting zsh-autosuggestions tmux fzf btop tailscale lsd jq delta
 
-# Without an existing ~/.config, stow links the whole folder into the repo
-mkdir -p "$HOME/.config"
+# Without existing ~/.config and ~/.local/bin, stow links the whole folders into the repo
+mkdir -p "$HOME/.config" "$HOME/.local/bin"
 stow .
 
 # tealdeer (tldr): Alpine only ships it in edge/testing, so use the static musl build

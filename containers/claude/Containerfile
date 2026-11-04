@@ -1,8 +1,11 @@
-# Claude Code in a container: only the directory mounted at run time is visible to it.
-# Started by the claude-box function in .config/zshrc/aliases.zshrc
+# Claude Code in a container: only the directories mounted at run time are visible to it.
+# Started by the claude-box function in .config/zshrc/aliases.zshrc (interactive) and by
+# .local/bin/claude-box-acp (ACP agent for Rider and other editors)
 FROM docker.io/library/node:22-trixie-slim
 
 ARG CLAUDE_CODE_VERSION=2.1.312
+# ACP adapter; its bundled Claude Agent SDK 0.3.x tracks the same Claude Code release line
+ARG CLAUDE_AGENT_ACP_VERSION=0.99.1
 
 # git-delta: keeps a host ~/.gitconfig with core.pager=delta working inside the container
 RUN apt-get update \
@@ -10,6 +13,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+      "@agentclientprotocol/claude-agent-acp@${CLAUDE_AGENT_ACP_VERSION}" \
  && npm cache clean --force
 
 # oh-my-posh for the Claude Code status line (same pinned release and hashes as setup-common.sh)

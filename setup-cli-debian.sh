@@ -14,8 +14,8 @@ cd "$(dirname "$(realpath "$0")")"
 sudo apt-get update
 sudo apt-get install -y stow curl ca-certificates
 
-# Without an existing ~/.config, stow links the whole folder into the repo
-mkdir -p "$HOME/.config"
+# Without existing ~/.config and ~/.local/bin, stow links the whole folders into the repo
+mkdir -p "$HOME/.config" "$HOME/.local/bin"
 stow .
 
 # Tailscale isn't in the Debian/Ubuntu repos, so add its apt repo (ID is debian or ubuntu)

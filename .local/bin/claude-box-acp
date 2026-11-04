@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Claude Code as an ACP (Agent Client Protocol) agent in the same rootless podman container as
+# claude-box, for editors that speak ACP: Rider and other JetBrains IDEs (~/.jetbrains/acp.json,
+# registered by setup-fedora.sh), Zed, CodeCompanion.nvim. The editor starts this script and
+# exchanges JSON-RPC over stdin/stdout, so nothing here may print to stdout; messages go to stderr.
+# Login, settings and memory are shared with claude-box in ~/.local/share/claude-box.
+#
+# Usage: claude-box-acp [--root DIR]...
+# Each --root is mounted read-write at the same path and the project the editor opens must be
+# below one of them. ACP delivers the project path only inside the session/new request, after
+# this process has started, and JetBrains IDEs start the agent in an IDE scratch folder (one
+# process for all projects), so the folders to expose have to be given up front. Without --root
+# the current directory is used, which suits clients that start the agent in the project root
+# (Zed, CodeCompanion.nvim)
+set -euo pipefail
+
+image=localhost/claude-box
+state="$HOME/.local/share/claude-box"
+# Stowed symlink: the real file lives in the dotfiles repo next to containers/claude
+box_dir="$(dirname "$(realpath "$0")")/../../containers/claude"
+
+roots=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --root)
+      [[ $# -ge 2 ]] || { echo "claude-box-acp: --root needs a directory" >&2; exit 2; }
+      roots+=("$2")
+      shift 2
+      ;;
+    *) echo "claude-box-acp: unknown argument $1" >&2; exit 2 ;;
+  esac
+done
+[[ ${#roots[@]} -gt 0 ]] || roots=("$PWD")
+
+# Mount sources must be real paths: podman relabels a symlink itself, not its target. Shared labels
+# (:z) so this container and an interactive claude-box can use the same files at the same time
+mounts=()
+for root in "${roots[@]}"; do
+  if [[ ! -d "$root" ]]; then
+    echo "claude-box-acp: not a directory: $root" >&2
+    exit 2
+  fi
+  root="$(realpath "$root")"
+  mounts+=(-v "$root:$root:z")
+done
+
+if ! podman image exists "$image"; then
+  podman build -t "$image" "$box_dir" >&2
+fi
+mkdir -p "$state"
+gitconfig="$HOME/.gitconfig"
+if [[ -f "$gitconfig" ]]; then
+  mounts+=(-v "$(realpath "$gitconfig"):/home/node/.gitconfig:ro,z")
+fi
+
+# exec so the editor's signals reach podman directly; -i without -t keeps stdio a clean byte stream
+exec podman run --rm -i \
+  --userns=keep-id --cap-drop=ALL --security-opt=no-new-privileges \
+  --hostname claude-box \
+  --entrypoint claude-agent-acp \
+  -v "$state:/home/node/.claude:z" \
+  "${mounts[@]}" \
+  "$image"

@@ -13,8 +13,8 @@ cd "$(dirname "$(realpath "$0")")"
 
 sudo dnf install -y stow
 
-# Without an existing ~/.config, stow links the whole folder into the repo
-mkdir -p "$HOME/.config"
+# Without existing ~/.config and ~/.local/bin, stow links the whole folders into the repo
+mkdir -p "$HOME/.config" "$HOME/.local/bin"
 stow .
 
 sudo dnf install -y git zsh zsh-syntax-highlighting zsh-autosuggestions tmux fzf btop tailscale lsd jq git-delta tldr

@@ -21,7 +21,8 @@ alias cobalt="yt-dlp --recode-video mp4 --force-write-archive"
 
 # Claude Code in a rootless podman container: it can only see and write the current directory.
 # Login, settings and memory persist in ~/.local/share/claude-box; arguments go to claude
-# (e.g. `claude-box --continue`, `claude-box --dangerously-skip-permissions`)
+# (e.g. `claude-box --continue`, `claude-box --dangerously-skip-permissions`).
+# claude-box-acp (.local/bin, stowed) runs the same image as an ACP agent for Rider and other editors
 if command -v podman &>/dev/null; then
   typeset -g CLAUDE_BOX_DIR="${${(%):-%x}:A:h}/../../containers/claude"
   # Rebuild after changing the Containerfile (e.g. bumping the Claude Code or oh-my-posh version)
@@ -40,17 +41,18 @@ if command -v podman &>/dev/null; then
       jq -s '.[0] * .[1]' "$state/settings.json" "$CLAUDE_BOX_DIR/settings.json" > "$state/settings.json.tmp" \
         && mv "$state/settings.json.tmp" "$state/settings.json"
     fi
-    # Mount sources must be real paths: podman relabels (:Z) a symlink itself, not its target, and the
-    # stowed configs are symlinks into the dotfiles repo, so SELinux would deny access inside the container
+    # Mount sources must be real paths: podman relabels a symlink itself, not its target, and the stowed
+    # configs are symlinks into the dotfiles repo, so SELinux would deny access inside the container.
+    # Shared labels (:z) so this and a claude-box-acp container can use the same files at the same time
     local project="${PWD:A}" gitconfig="$HOME/.gitconfig" omp="$HOME/.config/oh-my-posh"
     local -a extra
-    [[ -f "$gitconfig" ]] && extra+=(-v "${gitconfig:A}:/home/node/.gitconfig:ro,Z")
-    [[ -d "$omp" ]] && extra+=(-v "${omp:A}:/home/node/.config/oh-my-posh:ro,Z")
+    [[ -f "$gitconfig" ]] && extra+=(-v "${gitconfig:A}:/home/node/.gitconfig:ro,z")
+    [[ -d "$omp" ]] && extra+=(-v "${omp:A}:/home/node/.config/oh-my-posh:ro,z")
     podman run --rm -it \
       --userns=keep-id --cap-drop=ALL --security-opt=no-new-privileges \
       --hostname claude-box \
-      -v "$state:/home/node/.claude:Z" \
-      -v "$project:$project:Z" -w "$project" \
+      -v "$state:/home/node/.claude:z" \
+      -v "$project:$project:z" -w "$project" \
       "${extra[@]}" \
       -e TERM -e COLORTERM \
       "$image" "$@"
