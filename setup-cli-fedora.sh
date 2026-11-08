@@ -15,7 +15,7 @@ sudo dnf install -y stow
 
 # Without existing ~/.config and ~/.local/bin, stow links the whole folders into the repo
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
-stow .
+stow -R .
 
 sudo dnf install -y git zsh zsh-syntax-highlighting zsh-autosuggestions tmux fzf btop tailscale lsd jq git-delta tldr
 

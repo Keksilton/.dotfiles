@@ -37,7 +37,7 @@ $SUDO apk add stow curl ca-certificates bash shadow git zsh zsh-syntax-highlight
 
 # Without existing ~/.config and ~/.local/bin, stow links the whole folders into the repo
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
-stow .
+stow -R .
 
 # tealdeer (tldr): Alpine only ships it in edge/testing, so use the static musl build
 if ! has tldr; then

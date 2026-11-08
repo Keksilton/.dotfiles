@@ -2,5 +2,6 @@
 .config/btop/btop.log
 .config/nvim/doc/tags
 
-# TPM and the plugins it installs (bootstrapped from .tmux.conf instead)
+# TPM and the plugins it installs (bootstrapped from .config/tmux/tmux.conf instead)
 .config/tmux/plugins/
+.config/tmux/tpm-install.log

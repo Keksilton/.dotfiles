@@ -16,7 +16,7 @@ sudo apt-get install -y stow curl ca-certificates
 
 # Without existing ~/.config and ~/.local/bin, stow links the whole folders into the repo
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
-stow .
+stow -R .
 
 # Tailscale isn't in the Debian/Ubuntu repos, so add its apt repo (ID is debian or ubuntu)
 if [[ ! -f /etc/apt/sources.list.d/tailscale.list ]]; then

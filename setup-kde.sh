@@ -46,7 +46,7 @@ unfold() {
 unfold "$HOME/.config/Kvantum"
 unfold "$HOME/.local/share/color-schemes"
 unfold "$HOME/.local/share/plasma/look-and-feel"
-stow .
+stow -R .
 
 # Andromeda Kvantum theme and Plasma style
 kvantum_theme="$HOME/.config/Kvantum/Andromeda"
